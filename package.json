@@ -1,7 +1,7 @@
 {
   "name": "@smartv/magic-navigation",
   "author": "Leonardo Melati <leonardomelati@gmail.com>",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.0",
   "description": "SmartTV Navigation",
   "namespace": "@smartv",
   "license": "MIT",
