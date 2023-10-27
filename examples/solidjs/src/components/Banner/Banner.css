@@ -1,0 +1,17 @@
+.bannerContainer {
+  flex: 1;
+  background-color: lightcoral;
+  padding: 20px;
+}
+
+.banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: lightsalmon;
+}
+
+.banner.focused {
+  border: 4px solid white;
+}
