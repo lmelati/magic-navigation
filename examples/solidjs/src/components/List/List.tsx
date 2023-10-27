@@ -1,7 +1,7 @@
 import './List.css'
 import { For } from 'solid-js'
 
-import { createVirtualNavigation } from '../../../../../build/lib'
+import { createMagicNavigation } from '../../../../../build/lib'
 
 export const List = () => {
   let listRef!: HTMLDivElement
@@ -13,7 +13,7 @@ export const List = () => {
         {(_, index) => {
           let cardRef!: HTMLDivElement
 
-          const { setCurrent } = createVirtualNavigation({
+          const { setCurrent } = createMagicNavigation({
             key: `card-${index()}`,
             ref: () => cardRef,
             toggleActiveClass: true,

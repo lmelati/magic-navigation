@@ -1,11 +1,11 @@
 import './Banner.css'
 
-import { createVirtualNavigation } from '../../../../../build/lib'
+import { createMagicNavigation } from '../../../../../build/lib'
 
 export const Banner = () => {
   let bannerRef!: HTMLDivElement
 
-  const { onStatusChange, onCurrentChange, setCurrent } = createVirtualNavigation({
+  const { onStatusChange, onCurrentChange, setCurrent } = createMagicNavigation({
     key: 'banner',
     ref: () => bannerRef,
     toggleActiveClass: true,
