@@ -41,6 +41,7 @@ export function createMagicNavigation({
       }
     } else if (active.getValue() && node?.key !== key) {
       active.next(false)
+      if (toggleActiveClass) ref().classList.toggle('focused')
     }
   })
 
