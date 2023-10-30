@@ -1,37 +1,46 @@
 import type { magicNavigation, magicNavigationOptions } from './types'
-import { Navigation } from './navigation'
+import { MagicNavigation } from './magic-navigation'
 import { BehaviorSubject } from 'rxjs'
 
-class MagicNavigation extends Navigation {
-  private static instance: MagicNavigation
+export function createMagicNavigation({
+  key,
+  ref,
+  actions,
+  enableHover = true,
+  isActive,
+  toggleActiveClass,
+}: magicNavigationOptions): magicNavigation {
+  const active = new BehaviorSubject<boolean>(false)
+  const {
+    currentNode,
+    onLoad,
+    mouseEvents,
+    getNode,
+    addNote,
+    setNode,
+    toggleClass,
+  } = MagicNavigation.getInstance()
 
-  public static getInstance() {
-    if (!MagicNavigation.instance) {
-      MagicNavigation.instance = new MagicNavigation()
+  onLoad(() => {
+    addNote({ key, ref, actions }, isActive)
+
+    if (enableHover) {
+      setTimeout(() => mouseEvents(ref()), 50)
     }
-    return MagicNavigation.instance
-  }
-}
-
-export function createMagicNavigation(
-  options: magicNavigationOptions,
-): magicNavigation {
-  const isActive = new BehaviorSubject<boolean>(false)
-  const { currentNode, getNode, addNote, setNode, toggleClass } =
-    MagicNavigation.getInstance()
-
-  addNote(
-    { key: options.key, ref: options.ref, actions: options.actions },
-    options.isActive,
-  )
+  })
 
   currentNode.subscribe((node) => {
-    const { key } = options
     if (node?.key === key) {
-      if (!isActive.getValue()) {
-        isActive.next(true)
-        setTimeout(() => toggleActiveClass(), 10)
+      if (!active.getValue()) {
+        active.next(true)
+        setTimeout(() => {
+          if (toggleActiveClass) {
+            toggleClass()
+          }
+        }, 50)
       }
+    } else if (active.getValue() && node?.key !== key) {
+      active.next(false)
     }
   })
 
@@ -43,28 +52,22 @@ export function createMagicNavigation(
       return
     }
 
-    if (isActive.getValue()) {
-      isActive.next(false)
-      toggleActiveClass()
+    if (active.getValue()) {
+      active.next(false)
+      if (toggleActiveClass) {
+        toggleClass()
+      }
     }
 
     setNode(current)
   }
 
-  const toggleActiveClass = () => {
-    const { toggleActiveClass } = options
-    if (toggleActiveClass) {
-      toggleClass()
-    }
-  }
-
   return {
-    onStatusChange: (callback) => {
-      isActive.subscribe((status) => callback(status))
-    },
+    onStatusChange: (callback) =>
+      active.subscribe((status) => callback(status)),
     onCurrentChange: (callback) => {
       currentNode.subscribe((node) => {
-        if (node?.key && isActive.getValue()) {
+        if (node?.key && active.getValue()) {
           callback(node.key)
         }
       })
