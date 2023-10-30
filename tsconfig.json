@@ -18,10 +18,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "composite": true,
     "rootDir": "./src",
     "outDir": "./build/lib",
-    "tsBuildInfoFile": "./build/.tsbuildinfo",
     "paths": {
       "@/": ["./src"],
     }
