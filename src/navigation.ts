@@ -1,5 +1,5 @@
 import { NavigationNode, NavigationStorage } from './storage'
-import { BehaviorSubject, fromEvent, map } from 'rxjs'
+import { BehaviorSubject, fromEvent } from 'rxjs'
 import { MAPPED_KEYS } from './types/keys'
 import { NavigationNodeConfig } from './types'
 
@@ -11,9 +11,8 @@ export abstract class Navigation {
     this.navigationStorage = NavigationStorage.getInstance()
     this.currentNode = new BehaviorSubject<NavigationNode | null>(null)
 
-    fromEvent(document, 'keydown')
-      .pipe(map((event) => event as KeyboardEvent))
-      .subscribe(this.keyboardEvents)
+    fromEvent(document, 'DOMContentLoaded').subscribe(() => this.onLoad)
+    fromEvent<KeyboardEvent>(document, 'keydown').subscribe(this.keyboardEvents)
   }
 
   public setNode = (key: string) => {
@@ -38,6 +37,48 @@ export abstract class Navigation {
     const currentNode = this.currentNode.getValue()
     if (currentNode?.ref) {
       currentNode.ref().classList.toggle('focused')
+    }
+  }
+
+  public onLoad = (callback?: () => void) => callback?.()
+
+  public mouseEvents = (ref: Element) => {
+    if (!ref) return
+
+    ref.addEventListener(
+      'click',
+      () => {
+        const currentNode = this.findCurrentNodeWithRef(ref)
+        if (currentNode?.value?.actions?.onEnter) {
+          currentNode.value.actions.onEnter()
+        }
+      },
+      false,
+    )
+
+    ref.addEventListener(
+      'mouseenter',
+      () => {
+        const currentNode = this.findCurrentNodeWithRef(ref)
+        if (currentNode?.key) this.setNode(currentNode.key)
+      },
+      false,
+    )
+
+    ref.addEventListener(
+      'mouseleave',
+      () => {
+        this.currentNode.next(null)
+      },
+      false,
+    )
+  }
+
+  private findCurrentNodeWithRef = (ref: Element) => {
+    for (var [key, value] of this.navigationStorage.getNodes()) {
+      if (value.ref?.() === ref) {
+        return { key, value }
+      }
     }
   }
 
