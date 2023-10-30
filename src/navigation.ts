@@ -33,6 +33,8 @@ export abstract class Navigation {
     }
   }
 
+  public clearNodes = () => this.navigationStorage.clearNodes()
+
   public toggleClass = () => {
     const currentNode = this.currentNode.getValue()
     if (currentNode?.ref) {
@@ -47,7 +49,8 @@ export abstract class Navigation {
 
     ref.addEventListener(
       'click',
-      () => {
+      (event) => {
+        event.stopPropagation()
         const currentNode = this.findCurrentNodeWithRef(ref)
         if (currentNode?.value?.actions?.onEnter) {
           currentNode.value.actions.onEnter()
@@ -58,17 +61,10 @@ export abstract class Navigation {
 
     ref.addEventListener(
       'mouseenter',
-      () => {
+      (event) => {
+        event.stopPropagation()
         const currentNode = this.findCurrentNodeWithRef(ref)
         if (currentNode?.key) this.setNode(currentNode.key)
-      },
-      false,
-    )
-
-    ref.addEventListener(
-      'mouseleave',
-      () => {
-        this.currentNode.next(null)
       },
       false,
     )

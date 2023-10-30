@@ -53,4 +53,8 @@ export class NavigationStorage {
   public getNodes() {
     return this.nodes;
   }
+
+  public clearNodes() {
+    this.getNodes()?.clear()
+  }
 }

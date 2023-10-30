@@ -26,4 +26,5 @@ export interface magicNavigation {
   onStatusChange(callback: (status: boolean) => void): void
   onCurrentChange(callback: (current: string) => void): void
   setCurrent(current: string): void
+  clearNodes(): void
 }

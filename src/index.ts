@@ -18,6 +18,7 @@ export function createMagicNavigation({
     getNode,
     addNote,
     setNode,
+    clearNodes,
     toggleClass,
   } = MagicNavigation.getInstance()
 
@@ -74,5 +75,6 @@ export function createMagicNavigation({
       })
     },
     setCurrent,
+    clearNodes
   }
 }
