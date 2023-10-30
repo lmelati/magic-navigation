@@ -16,10 +16,10 @@ export interface NavigationNodeConfig extends Partial<magicNavigationKeys> {
 
 export interface magicNavigationOptions extends Partial<magicNavigationKeys> {
   key: string
-  isActive?: () => boolean
-  ref?: () => Element
+  ref: () => Element
+  enableHover?: boolean
   toggleActiveClass?: boolean
-  activeClass?: string
+  isActive?: () => boolean
 }
 
 export interface magicNavigation {
