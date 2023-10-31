@@ -1,7 +1,7 @@
 {
   "name": "magic-navigation",
   "author": "Leonardo Melati <leonardomelati@gmail.com>",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "SmartTV navigation to use with remote control. Tizen and WebOS compatible.",
   "license": "MIT",
   "type": "module",
@@ -37,8 +37,7 @@
   },
   "sideEffects": false,
   "files": [
-    "build/lib/*",
-    "src"
+    "build/lib/*"
   ],
   "scripts": {
     "clean": "rm -rf build || true",
@@ -62,5 +61,8 @@
   "dependencies": {
     "rxjs": "^7.8.1",
     "solid-js": "^1.8.5"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.7"
   }
 }

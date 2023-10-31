@@ -7,10 +7,7 @@ import type {
   magicNavigationOptions,
 } from './types'
 
-const MagicNavigationContext = createContext<{
-  instance: MagicNavigationInstance
-  config: MagicNavigationProps['config']
-}>()
+const MagicNavigationContext = createContext<MagicNavigationInstance>()
 
 export function MagicNavigation(props: MagicNavigationProps) {
   const instance = MagicNavigationInstance.getInstance()
@@ -20,36 +17,27 @@ export function MagicNavigation(props: MagicNavigationProps) {
   })
 
   return createComponent(MagicNavigationContext.Provider, {
-    value: {
-      instance,
-      config: props.config,
-    },
+    value: instance,
     get children() {
       return props.children
     },
   })
 }
 
-function useMagicNavigationContext(): {
-  instance: MagicNavigationInstance
-  config: MagicNavigationProps['config']
-} {
+function useMagicNavigationContext(): MagicNavigationInstance {
   const ctx = useContext(MagicNavigationContext)
 
-  if (!ctx?.instance) {
+  if (!ctx) {
     throw new Error('Missing `<MagicNavigation>`')
   }
 
-  return {
-    instance: ctx.instance,
-    config: ctx.config,
-  }
+  return ctx
 }
 
 export function createMagicNavigation(
-  options: magicNavigationOptions
+  options: magicNavigationOptions,
 ): magicNavigation {
-  const { instance, config } = useMagicNavigationContext()
+  const instance = useMagicNavigationContext()
 
   const subscription = new Subscription()
   const active = new BehaviorSubject<boolean>(false)
@@ -61,12 +49,10 @@ export function createMagicNavigation(
 
     instance.addNote(
       { key: options.key, ref: options.ref, actions: options.actions },
-      options.isActive
+      options.isActive,
     )
 
-    if (config.enableHover) {
-      setTimeout(() => instance.mouseEvents(options.ref()), 50)
-    }
+    setTimeout(() => instance.mouseEvents(options.ref()), 50)
   })
 
   onCleanup(() => {
@@ -89,7 +75,7 @@ export function createMagicNavigation(
         active.next(false)
         if (options.toggleActiveClass) options.ref().classList.toggle('focused')
       }
-    })
+    }),
   )
 
   const setCurrent = (current: string) => {
@@ -120,7 +106,7 @@ export function createMagicNavigation(
           if (node?.key && active.getValue()) {
             callback(node.key)
           }
-        })
+        }),
       )
     },
     setCurrent,
