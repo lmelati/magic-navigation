@@ -1,13 +1,12 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 dependencies:
   rxjs:
     specifier: ^7.8.1
     version: 7.8.1
+  solid-js:
+    specifier: ^1.8.5
+    version: 1.8.5
 
 devDependencies:
   '@types/node':
@@ -582,6 +581,10 @@ packages:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
     dev: true
 
+  /csstype@3.1.2:
+    resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
+    dev: false
+
   /date-fns@2.30.0:
     resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
     engines: {node: '>=0.11'}
@@ -921,9 +924,21 @@ packages:
     dependencies:
       tslib: 2.6.2
 
+  /seroval@0.12.0:
+    resolution: {integrity: sha512-5qvk9WRORhvOdHVtDv6KEKrTDbG8O9nODDdETfQcJ0u9iaZJ6mAASg/nQgPzqtuV9cqln9msE7WNmD+sJomrIw==}
+    engines: {node: '>=10'}
+    dev: false
+
   /shell-quote@1.8.1:
     resolution: {integrity: sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==}
     dev: true
+
+  /solid-js@1.8.5:
+    resolution: {integrity: sha512-xvtJvzJzWbsn35oKFhW9kNwaxG1Z/YLMsDp4tLVcYZTMPzvzQ8vEZuyDQ6nt7xDArVgZJ7TUFrJUwrui/oq53A==}
+    dependencies:
+      csstype: 3.1.2
+      seroval: 0.12.0
+    dev: false
 
   /spawn-command@0.0.2:
     resolution: {integrity: sha512-zC8zGoGkmc8J9ndvml8Xksr1Amk9qBujgbF0JAIWO7kXr43w0h/0GJNM/Vustixu+YE8N/MTrQ7N31FvHUACxQ==}
@@ -1071,3 +1086,7 @@ packages:
     resolution: {integrity: sha512-40fpE2II+Cd3k8HWTWONfeKE2jL+P42iWJ1zzps5W51qcTsOUKM5Q5m2PFb0CLxlmFAaUuUdJGc3OfZy947v0w==}
     engines: {node: '>=0.2.0'}
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

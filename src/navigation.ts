@@ -1,10 +1,10 @@
+import { BehaviorSubject, fromEvent, interval, throttle } from 'rxjs'
 import { NavigationNode, NavigationStorage } from './storage'
-import { BehaviorSubject, fromEvent } from 'rxjs'
+import type { NavigationNodeConfig } from './types'
 import { MAPPED_KEYS } from './types/keys'
-import { NavigationNodeConfig } from './types'
 
 export abstract class Navigation {
-  private navigationStorage: NavigationStorage
+  public navigationStorage: NavigationStorage
   public readonly currentNode: BehaviorSubject<NavigationNode | null>
 
   constructor() {
@@ -12,7 +12,9 @@ export abstract class Navigation {
     this.currentNode = new BehaviorSubject<NavigationNode | null>(null)
 
     fromEvent(document, 'DOMContentLoaded').subscribe(() => this.onLoad)
-    fromEvent<KeyboardEvent>(document, 'keydown').subscribe(this.keyboardEvents)
+    fromEvent<KeyboardEvent>(document, 'keydown')
+      .pipe(throttle(() => interval(150)))
+      .subscribe(this.keyboardEvents)
   }
 
   public setNode = (key: string) => {
@@ -24,16 +26,12 @@ export abstract class Navigation {
     this.currentNode.next(getNode)
   }
 
-  public getNode = (key: string) => this.navigationStorage.getNode(key)
-
   public addNote = (config: NavigationNodeConfig, isActive?: () => boolean) => {
     this.navigationStorage.addNode(config)
     if (isActive?.()) {
       this.setNode(config.key)
     }
   }
-
-  public clearNodes = () => this.navigationStorage.clearNodes()
 
   public toggleClass = () => {
     const currentNode = this.currentNode.getValue()
@@ -43,6 +41,10 @@ export abstract class Navigation {
   }
 
   public onLoad = (callback?: () => void) => callback?.()
+
+  public destroy = () => {
+    this.currentNode.next(null)
+  }
 
   public mouseEvents = (ref: Element) => {
     if (!ref) return
@@ -56,7 +58,7 @@ export abstract class Navigation {
           currentNode.value.actions.onEnter()
         }
       },
-      false,
+      false
     )
 
     ref.addEventListener(
@@ -66,12 +68,12 @@ export abstract class Navigation {
         const currentNode = this.findCurrentNodeWithRef(ref)
         if (currentNode?.key) this.setNode(currentNode.key)
       },
-      false,
+      false
     )
   }
 
   private findCurrentNodeWithRef = (ref: Element) => {
-    for (var [key, value] of this.navigationStorage.getNodes()) {
+    for (const [key, value] of this.navigationStorage.getNodes()) {
       if (value.ref?.() === ref) {
         return { key, value }
       }
