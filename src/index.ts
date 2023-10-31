@@ -36,7 +36,7 @@ function useMagicNavigationContext(): {
 } {
   const ctx = useContext(MagicNavigationContext)
 
-  if (!ctx) {
+  if (!ctx?.instance) {
     throw new Error('Missing `<MagicNavigation>`')
   }
 
