@@ -20,7 +20,6 @@ export interface IMagicListNavigation {
   onNavigationEnd(callback: () => void): void
   setActive(key: string): void
   setActiveIndex({ key, index }: SetActiveIndexProps): void
-  clearList(key: string): void
 }
 
 export interface IListNavigationChildren extends Partial<IMagicNavigationKeys> {

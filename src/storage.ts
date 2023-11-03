@@ -66,4 +66,8 @@ export class Storage {
   clearList(key: string) {
     this.list.delete(key)
   }
+
+  clearAllList() {
+    this.list.clear()
+  }
 }

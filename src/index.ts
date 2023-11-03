@@ -50,6 +50,16 @@ function useMagicNavigation(): Navigation {
   return ctx
 }
 
+export const clearList = (key: string) => {
+  const context = useMagicNavigation()
+  return context.storage.clearList(key)
+}
+
+export const clearAllList = () => {
+  const context = useMagicNavigation()
+  return context.storage.clearAllList()
+}
+
 export function createMagicListNavigation({
   key,
   actions,
@@ -149,7 +159,6 @@ export function createMagicListNavigation({
   return {
     setActive: context.setActive,
     setActiveIndex: context.setActiveIndex,
-    clearList: context.storage.clearList,
     onStatusChange: (callback) =>
       subscription.add(currentIsActive.subscribe(callback)),
     onNavigationStart: (callback: () => void) => {
