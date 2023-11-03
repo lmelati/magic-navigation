@@ -1,7 +1,7 @@
 {
   "name": "magic-navigation",
   "author": "Leonardo Melati <leonardomelati@gmail.com>",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "description": "SmartTV navigation to use with remote control. Tizen and WebOS compatible.",
   "license": "MIT",
   "type": "module",
@@ -45,7 +45,8 @@
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
     "dev": "pnpm run clean && npm run watch",
     "prettier": "prettier --write \"src/**/*.{js,ts}\"",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "prepublish": "pnpm run build"
   },
   "devDependencies": {
     "@types/node": "^20.8.9",
