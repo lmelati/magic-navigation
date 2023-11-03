@@ -7,7 +7,13 @@ import {
   pairwise,
   startWith,
 } from 'rxjs'
-import { createContext, onCleanup, createComponent, useContext } from 'solid-js'
+import {
+  createComponent,
+  createContext,
+  onCleanup,
+  onMount,
+  useContext,
+} from 'solid-js'
 import { Navigation } from './navigation'
 import type {
   IMagicListNavigation,
@@ -71,7 +77,7 @@ export function createMagicListNavigation({
     },
   })
 
-  context.init(() => {
+  onMount(() => {
     const { first, last } = getPosition(index, size)
 
     if (first) {
@@ -95,6 +101,7 @@ export function createMagicListNavigation({
 
   onCleanup(() => {
     subscription.unsubscribe()
+    context.destroy()
   })
 
   subscription.add(
@@ -102,7 +109,7 @@ export function createMagicListNavigation({
       .pipe(
         startWith(undefined),
         pairwise(),
-        filter(([prev, current]) => prev?.key === key || current?.key === key),
+        filter(([prev, current]) => prev?.key === key || current?.key === key)
       )
       .subscribe(([prev, current]) => {
         const getPrev = prev?.key === key && prev.index === index
@@ -117,7 +124,7 @@ export function createMagicListNavigation({
 
         if (getPrev) {
           const prevChildIndex = getList.childrens.findIndex(
-            (child) => child.index === prev.index && isCurrentActive,
+            (child) => child.index === prev.index && isCurrentActive
           )
           currentIsActive.next(false)
           if (prevChildIndex !== -1 && key === currentListKey) {
@@ -127,18 +134,21 @@ export function createMagicListNavigation({
         }
 
         if (getCurrent) {
-          const currentChildIndex = getList.childrens.findIndex((child) => child.index === current.index && !isCurrentActive);
+          const currentChildIndex = getList.childrens.findIndex(
+            (child) => child.index === current.index && !isCurrentActive
+          )
           if (currentChildIndex !== -1) {
-            currentIsActive.next(true);
+            currentIsActive.next(true)
             // @ts-ignore
-            getList.childrens[currentChildIndex].isActive = true;
+            getList.childrens[currentChildIndex].isActive = true
           }
         }
-      }),
+      })
   )
 
   return {
     setActive: context.setActive,
+    setActiveIndex: context.setActiveIndex,
     clearList: context.storage.clearList,
     onStatusChange: (callback) =>
       subscription.add(currentIsActive.subscribe(callback)),
@@ -154,7 +164,7 @@ export function createMagicListNavigation({
           if (current?.key && currentIsActive.getValue()) {
             callback(current.index)
           }
-        }),
+        })
       )
     },
   }

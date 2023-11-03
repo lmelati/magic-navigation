@@ -5,6 +5,7 @@ export enum MAPPED_KEYS {
   KEY_LEFT = 'ArrowLeft',
   KEY_ENTER = 'Enter',
   KEY_BACK = 'GoBack',
+  KEY_ESCAPE = 'Escape',
 }
 
 export interface IMagicNavigationKeys {

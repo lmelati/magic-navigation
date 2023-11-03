@@ -2,6 +2,7 @@ import { IMagicNavigationKeys } from "./keys"
 
 export type IDirection = 'top' | 'right' | 'bottom' | 'left'
 export type IAxis = 'horizontal' | 'vertical'
+export type SetActiveIndexProps = { key: string, index: number }
 
 export interface IMagicListNavigationOptions extends Partial<IMagicNavigationKeys> {
   key: string
@@ -18,6 +19,7 @@ export interface IMagicListNavigation {
   onNavigationStart(callback: () => void): void
   onNavigationEnd(callback: () => void): void
   setActive(key: string): void
+  setActiveIndex({ key, index }: SetActiveIndexProps): void
   clearList(key: string): void
 }
 

@@ -1,10 +1,10 @@
-import { BehaviorSubject, fromEvent, interval, take, throttle } from 'rxjs'
-import { Storage } from './storage'
+import { BehaviorSubject, fromEvent, interval, throttle } from 'rxjs'
 import { CurrentList } from './instances/CurrentList'
+import { Storage } from './storage'
+import type { IDirection, SetActiveIndexProps } from './types'
 import { MAPPED_KEYS } from './types/keys'
-import type { IDirection } from './types'
-import { getPosition } from './utils/position'
 import { dispatchNavigationEvent } from './utils/events'
+import { getPosition } from './utils/position'
 
 export class Navigation {
   public storage: Storage
@@ -17,13 +17,6 @@ export class Navigation {
     fromEvent<KeyboardEvent>(document, 'keydown')
       .pipe(throttle(() => interval(150)))
       .subscribe(this.keyboardEvents)
-  }
-
-  init = (callback: () => void) => {
-    fromEvent(document, 'DOMContentLoaded')
-      .pipe(take(1))
-      .pipe(throttle(() => interval(100)))
-      .subscribe(callback)
   }
 
   destroy = () => {
@@ -44,7 +37,7 @@ export class Navigation {
           event.stopPropagation()
           currentList.actions?.onEnter?.()
         },
-        false,
+        false
       )
     }
 
@@ -54,7 +47,7 @@ export class Navigation {
         event.stopPropagation()
         this.setCurrentList(key, currentList.index)
       },
-      false,
+      false
     )
   }
 
@@ -80,6 +73,26 @@ export class Navigation {
 
     const findActive = getList.childrens.find((child) => child.isActive)
     this.setCurrentList(key, findActive?.index ?? 0)
+  }
+
+  setActiveIndex = ({ key, index }: SetActiveIndexProps) => {
+    const getList = this.storage.getList(key)
+
+    if (!getList) {
+      console.error(`List with key "${key}" does not exist or is undefined.`)
+      return
+    }
+
+    const getChildren = getList.childrens.find((child) => child.index === index)
+
+    if (!getChildren) {
+      console.error(
+        `List children with key "${key}" and index "${index}" does not exist or is undefined.`
+      )
+      return
+    }
+
+    this.setCurrentList(key, getChildren.index)
   }
 
   private navigate = (direction: IDirection) => {
@@ -109,7 +122,7 @@ export class Navigation {
     const currentList = this.storage.getList(getCurrentList.key)
     const currentChildren = this.storage.getListIndex(
       getCurrentList.key,
-      getCurrentList.index,
+      getCurrentList.index
     )
 
     if (!currentChildren || !currentList) return
@@ -170,6 +183,7 @@ export class Navigation {
         break
 
       case MAPPED_KEYS.KEY_BACK:
+      case MAPPED_KEYS.KEY_ESCAPE:
         actions?.onBack?.()
         break
 
