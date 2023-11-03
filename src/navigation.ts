@@ -107,7 +107,7 @@ export class Navigation {
     if (!currentListFromStorage) return
 
     const newIndex =
-      direction === 'left' || direction === 'bottom' ? index - 1 : index + 1
+      direction === 'left' || direction === 'top' ? index - 1 : index + 1
 
     if (typeof currentListFromStorage.childrens[newIndex]?.index === 'number') {
       this.setCurrentList(key, newIndex)
@@ -140,9 +140,9 @@ export class Navigation {
         } else if (direction === 'vertical') {
           if (first) {
             dispatchNavigationEvent(ref?.(), 'navigationonstart')
-          } else {
-            this.navigate('top')
           }
+
+          this.navigate('top')
         }
         break
 
@@ -152,9 +152,9 @@ export class Navigation {
         } else if (direction === 'horizontal') {
           if (last) {
             dispatchNavigationEvent(ref?.(), 'navigationonend')
-          } else {
-            this.navigate('right')
           }
+
+          this.navigate('right')
         }
         break
 
@@ -162,10 +162,10 @@ export class Navigation {
         if (actions?.onDown) {
           actions.onDown()
         } else if (direction === 'vertical') {
+          this.navigate('bottom')
+
           if (last) {
             dispatchNavigationEvent(ref?.(), 'navigationonend')
-          } else {
-            this.navigate('bottom')
           }
         }
         break
@@ -174,10 +174,10 @@ export class Navigation {
         if (actions?.onLeft) {
           actions.onLeft()
         } else if (direction === 'horizontal') {
+          this.navigate('left')
+
           if (first) {
             dispatchNavigationEvent(ref?.(), 'navigationonstart')
-          } else {
-            this.navigate('left')
           }
         }
         break
