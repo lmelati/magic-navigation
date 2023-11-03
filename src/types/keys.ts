@@ -6,3 +6,14 @@ export enum MAPPED_KEYS {
   KEY_ENTER = 'Enter',
   KEY_BACK = 'GoBack',
 }
+
+export interface IMagicNavigationKeys {
+  actions: {
+    onUp?: () => void
+    onRight?: () => void
+    onDown?: () => void
+    onLeft?: () => void
+    onEnter?: () => void
+    onBack?: () => void
+  }
+}

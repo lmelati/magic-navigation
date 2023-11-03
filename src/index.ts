@@ -1,16 +1,26 @@
-import { BehaviorSubject, Subscription } from 'rxjs'
-import { createComponent, createContext, onCleanup, useContext } from 'solid-js'
-import { MagicNavigationInstance } from './magic-navigation-instance'
+import {
+  BehaviorSubject,
+  Observable,
+  Subscription,
+  filter,
+  fromEvent,
+  pairwise,
+  startWith,
+} from 'rxjs'
+import { createContext, onCleanup, createComponent, useContext } from 'solid-js'
+import { Navigation } from './navigation'
 import type {
-  MagicNavigationProps,
-  magicNavigation,
-  magicNavigationOptions,
+  IMagicListNavigation,
+  IMagicListNavigationOptions,
+  IMagicNavigationEventNames,
+  IMagicNavigationProps,
 } from './types'
+import { getPosition } from './utils/position'
 
-const MagicNavigationContext = createContext<MagicNavigationInstance>()
+const MagicNavigationContext = createContext<Navigation>()
 
-export function MagicNavigation(props: MagicNavigationProps) {
-  const instance = MagicNavigationInstance.getInstance()
+export function MagicNavigation(props: IMagicNavigationProps) {
+  const instance = new Navigation()
 
   onCleanup(() => {
     instance.destroy()
@@ -24,7 +34,7 @@ export function MagicNavigation(props: MagicNavigationProps) {
   })
 }
 
-function useMagicNavigationContext(): MagicNavigationInstance {
+function useMagicNavigation(): Navigation {
   const ctx = useContext(MagicNavigationContext)
 
   if (!ctx) {
@@ -34,82 +44,118 @@ function useMagicNavigationContext(): MagicNavigationInstance {
   return ctx
 }
 
-export function createMagicNavigation(
-  options: magicNavigationOptions,
-): magicNavigation {
-  const instance = useMagicNavigationContext()
-
+export function createMagicListNavigation({
+  key,
+  actions,
+  direction = 'horizontal',
+  size,
+  index,
+  ref,
+  isActive,
+}: IMagicListNavigationOptions): IMagicListNavigation {
+  const context = useMagicNavigation()
   const subscription = new Subscription()
-  const active = new BehaviorSubject<boolean>(false)
+  const currentIsActive = new BehaviorSubject<boolean>(false)
+  const events: Record<string, Observable<unknown>> = {}
 
-  instance.onLoad(() => {
-    if (instance.navigationStorage.getNode(options.key)) {
-      instance.navigationStorage.deleteNode(options.key)
+  /** Init  **/
+  context.storage.setList({
+    key,
+    direction,
+    size,
+    children: {
+      ref,
+      actions,
+      index,
+      isActive: currentIsActive.getValue(),
+    },
+  })
+
+  context.init(() => {
+    const { first, last } = getPosition(index, size)
+
+    if (first) {
+      events.onNavigationStart = navigationEvent('navigationonstart')
     }
 
-    instance.addNote(
-      { key: options.key, ref: options.ref, actions: options.actions },
-      options.isActive,
-    )
+    if (last) {
+      events.onNavigationEnd = navigationEvent('navigationonend')
+    }
 
-    setTimeout(() => instance.mouseEvents(options.ref()), 50)
+    /** Bind mouse events **/
+    context.mouseEvents(key, ref)
   })
+
+  const navigationEvent = (eventName: IMagicNavigationEventNames) =>
+    fromEvent<IMagicNavigationEventNames>(ref?.(), eventName)
+
+  if (isActive?.()) {
+    context.setCurrentList(key, index)
+  }
 
   onCleanup(() => {
     subscription.unsubscribe()
-    instance.destroy()
   })
 
   subscription.add(
-    instance.currentNode.subscribe((node) => {
-      if (node?.key === options.key) {
-        if (!active.getValue()) {
-          active.next(true)
-          setTimeout(() => {
-            if (options.toggleActiveClass) {
-              instance.toggleClass()
-            }
-          }, 50)
+    context.currentList
+      .pipe(
+        startWith(undefined),
+        pairwise(),
+        filter(([prev, current]) => prev?.key === key || current?.key === key),
+      )
+      .subscribe(([prev, current]) => {
+        const getPrev = prev?.key === key && prev.index === index
+        const getCurrent = current?.key === key && current.index === index
+
+        const getList = context.storage.getList(key)
+
+        if (!getList) return
+
+        const currentListKey = context.currentList.getValue()?.key
+        const isCurrentActive = currentIsActive.getValue()
+
+        if (getPrev) {
+          const prevChildIndex = getList.childrens.findIndex(
+            (child) => child.index === prev.index && isCurrentActive,
+          )
+          currentIsActive.next(false)
+          if (prevChildIndex !== -1 && key === currentListKey) {
+            // @ts-ignore
+            getList.childrens[prevChildIndex].isActive = false
+          }
         }
-      } else if (active.getValue() && node?.key !== options.key) {
-        active.next(false)
-        if (options.toggleActiveClass) options.ref().classList.toggle('focused')
-      }
-    }),
+
+        if (getCurrent) {
+          const currentChildIndex = getList.childrens.findIndex((child) => child.index === current.index && !isCurrentActive);
+          if (currentChildIndex !== -1) {
+            currentIsActive.next(true);
+            // @ts-ignore
+            getList.childrens[currentChildIndex].isActive = true;
+          }
+        }
+      }),
   )
 
-  const setCurrent = (current: string) => {
-    const getCurrentNode = instance.navigationStorage.getNode(current)
-
-    if (!getCurrentNode) {
-      console.error(`Key ${current} does not exist`)
-      return
-    }
-
-    if (active.getValue()) {
-      active.next(false)
-      if (options.toggleActiveClass) {
-        instance.toggleClass()
-      }
-    }
-
-    instance.setNode(current)
-  }
-
   return {
-    onStatusChange: (callback) => {
-      subscription.add(active.subscribe(callback))
+    setActive: context.setActive,
+    clearList: context.storage.clearList,
+    onStatusChange: (callback) =>
+      subscription.add(currentIsActive.subscribe(callback)),
+    onNavigationStart: (callback: () => void) => {
+      setTimeout(() => events.onNavigationStart?.subscribe(callback), 150)
+    },
+    onNavigationEnd: (callback: () => void) => {
+      setTimeout(() => events.onNavigationEnd?.subscribe(callback), 150)
     },
     onCurrentChange: (callback) => {
       subscription.add(
-        instance.currentNode.subscribe((node) => {
-          if (node?.key && active.getValue()) {
-            callback(node.key)
+        context.currentList.subscribe((current) => {
+          if (current?.key && currentIsActive.getValue()) {
+            callback(current.index)
           }
         }),
       )
     },
-    setCurrent,
-    clearNodes: () => instance.navigationStorage.clearNodes(),
   }
 }

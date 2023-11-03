@@ -1,57 +1,69 @@
-import type { NavigationNodeConfig, magicNavigationKeys } from './types'
+import { NavigationList } from './instances/NavigationList'
+import type { IListNavigationChildren, INavigationList } from './types'
 
-export class NavigationNode implements magicNavigationKeys {
-  public key: string
-  public ref?: (() => Element) | undefined
-  public actions: {
-    onUp?: () => void
-    onRight?: () => void
-    onDown?: () => void
-    onLeft?: () => void
-    onEnter?: () => void
-    onBack?: () => void
-  }
-
-  constructor(config: NavigationNodeConfig) {
-    this.key = config.key
-    this.ref = config.ref
-    this.actions = config.actions || {}
-  }
-}
-
-export class NavigationStorage {
-  private static instance: NavigationStorage | null = null
-  private nodes: Map<string, NavigationNode> = new Map()
+export class Storage {
+  private static instance: Storage
+  private list: Map<string, NavigationList> = new Map()
 
   public static getInstance() {
-    if (!NavigationStorage.instance) {
-      NavigationStorage.instance = new NavigationStorage()
+    if (!Storage.instance) {
+      Storage.instance = new Storage()
     }
-    return NavigationStorage.instance
+    return Storage.instance
   }
 
-  public addNode({ key, actions, ref }: NavigationNodeConfig) {
-    if (this.nodes.has(key)) {
-      console.error(`Node ${key} already exists`)
+  /** List **/
+  getLists() {
+    return this.list
+  }
+
+  getList(key: string) {
+    return this.list.get(key)
+  }
+
+  getListRef(key: string, ref: () => Element) {
+    const getList = this.getList(key)
+
+    if (!getList) return
+
+    for (const children of getList.childrens) {
+      if (children.ref === ref) {
+        return children
+      }
+    }
+  }
+
+  getListIndex(key: string, index: number) {
+    const getList = this.getList(key)
+
+    if (!getList) return
+
+    for (const children of getList.childrens) {
+      if (children.index === index) {
+        return children
+      }
+    }
+  }
+
+  setList(list: Pick<INavigationList, 'key' | 'direction' | 'size'> & { children: IListNavigationChildren }) {
+    const getList = this.getList(list.key)
+
+    if(getList) {
+      getList.childrens.push(list.children)
       return
     }
-    const node = new NavigationNode({ key, actions, ref })
-    this.nodes.set(key, node)
+
+    const newList = new NavigationList({
+      key: list.key,
+      direction: list.direction,
+      size: list.size,
+      childrens: [list.children],
+    })
+
+    this.list.set(list.key, newList)
   }
 
-  public getNode(key: string) {
-    return this.nodes.get(key)
-  }
-
-  public getNodes() {
-    return this.nodes
-  }
-
-  public deleteNode(nodeId: string) {
-    this.nodes?.delete(nodeId)
-  }
-
-  public clearNodes() {
-    this.getNodes()?.clear()
+  clearList(key: string) {
+    this.list.delete(key)
   }
 }
