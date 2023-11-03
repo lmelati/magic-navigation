@@ -1,26 +1,30 @@
 import './Banner.css'
 
-import { createMagicNavigation } from '../../../../../build/lib'
+import { createMagicListNavigation } from '../../../../../build/lib'
+import { createSignal } from 'solid-js'
 
 export const Banner = () => {
   let bannerRef!: HTMLDivElement
-
-  const { onStatusChange, onCurrentChange, setCurrent } = createMagicNavigation({
+  const [isActive, setIsActive] = createSignal(false)
+  const { onStatusChange, setActive } = createMagicListNavigation({
     key: 'banner',
+    index: 0,
     ref: () => bannerRef,
-    toggleActiveClass: true,
     isActive: () => true,
+    direction: 'horizontal',
+    size: 1,
     actions: {
-      onDown: () => setCurrent('card-0')
+      onDown: () => {
+        setActive('cards')
+      }
     }
   })
 
-  onCurrentChange((current) => console.log('current', current))
-  onStatusChange((status) => console.log('status', status))
+  onStatusChange(setIsActive)
 
   return (
     <div class="bannerContainer">
-      <div ref={bannerRef} class="banner">
+      <div ref={bannerRef} class="banner" classList={{ focused: isActive() }}>
         <h1>Banner</h1>
       </div>
     </div>

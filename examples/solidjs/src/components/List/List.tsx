@@ -1,7 +1,7 @@
 import './List.css'
-import { For } from 'solid-js'
+import { For, createSignal } from 'solid-js'
 
-import { createMagicNavigation } from '../../../../../build/lib'
+import { createMagicListNavigation } from '../../../../../build/lib'
 
 export const List = () => {
   let listRef!: HTMLDivElement
@@ -10,28 +10,29 @@ export const List = () => {
   return (
     <div ref={listRef} class="list">
       <For each={cards}>
-        {(_, index) => {
+        {(item, index) => {
           let cardRef!: HTMLDivElement
-
-          const { setCurrent } = createMagicNavigation({
-            key: `card-${index()}`,
+          const [isActive, setIsActive] = createSignal(false)
+          const { onStatusChange, setActive, onNavigationStart, onNavigationEnd } = createMagicListNavigation({
+            key: 'cards',
+            index: index(),
             ref: () => cardRef,
-            toggleActiveClass: true,
+            size: cards.length,
+            direction: 'horizontal',
             actions: {
+              onEnter: () => console.log('clicou', item),
               onUp: () => {
-                setCurrent('banner')
-              },
-              onRight: () => {
-                setCurrent(`card-${index() + 1}`)
-              },
-              onLeft: () => {
-                setCurrent(`card-${index() - 1}`)
+                setActive('banner')
               },
             },
           })
 
+          onStatusChange(setIsActive)
+          onNavigationStart(() => console.log('UHUL DEU CERTO COMEÇO'))
+          onNavigationEnd(() => console.log('UHUL DEU CERTO FIM'))
+
           return (
-            <div ref={cardRef} class="card">
+            <div ref={cardRef} class='card' classList={{ focused: isActive()}}>
               <span>{index()}</span>
             </div>
           )
