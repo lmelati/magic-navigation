@@ -5,13 +5,18 @@ import type { IDirection, SetActiveIndexProps } from './types'
 import { MAPPED_KEYS } from './types/keys'
 import { dispatchNavigationEvent } from './utils/events'
 import { getPosition } from './utils/position'
+import { NavigationNode } from './instances/NavigationNode'
 
 export class Navigation {
   public storage: Storage
+
+  public readonly currentNode: BehaviorSubject<NavigationNode | undefined>
   public readonly currentList: BehaviorSubject<CurrentList | undefined>
 
   constructor() {
     this.storage = Storage.getInstance()
+
+    this.currentNode = new BehaviorSubject<NavigationNode | undefined>(undefined)
     this.currentList = new BehaviorSubject<CurrentList | undefined>(undefined)
 
     fromEvent<KeyboardEvent>(document, 'keydown')
@@ -21,21 +26,22 @@ export class Navigation {
 
   destroy = () => {
     this.currentList.next(undefined)
+    this.currentNode.next(undefined)
   }
 
-  mouseEvents = (key: string, ref: () => Element) => {
-    const currentList = this.storage.getListRef(key, ref)
+  mouseEvents = (key: string, ref: () => Element, type?: 'single' | 'list') => {
+    const current = type === 'single' ? this.storage.getNode(key) : this.storage.getListRef(key, ref)
 
-    if (!currentList) return
+    if (!current) return
 
     const listElement = ref?.()
 
-    if (currentList.actions?.onEnter) {
+    if (current.actions?.onEnter) {
       listElement.addEventListener(
         'click',
         (event) => {
           event.stopPropagation()
-          currentList.actions?.onEnter?.()
+          current.actions?.onEnter?.()
         },
         false
       )
@@ -45,11 +51,27 @@ export class Navigation {
       'mouseenter',
       (event) => {
         event.stopPropagation()
-        this.setCurrentList(key, currentList.index)
+        if(type === 'single') {
+          this.setCurrentNode(key)
+        } else {
+          // @ts-ignore
+          this.setCurrentList(key, current?.index)
+        }
       },
       false
     )
   }
+
+  /** Node **/
+  public setCurrentNode = (key: string) => {
+    const getNode = this.storage.getNode(key)
+    if (!getNode) {
+      console.error(`Key ${key} does not exist`)
+      return
+    }
+    this.currentNode.next(getNode)
+  }
+
 
   /** List **/
   setCurrentList(key: string, index: number) {
@@ -140,9 +162,9 @@ export class Navigation {
         } else if (direction === 'vertical') {
           if (first) {
             dispatchNavigationEvent(ref?.(), 'navigationonstart')
+          } else {
+            this.navigate('top')
           }
-
-          this.navigate('top')
         }
         break
 
@@ -152,9 +174,9 @@ export class Navigation {
         } else if (direction === 'horizontal') {
           if (last) {
             dispatchNavigationEvent(ref?.(), 'navigationonend')
+          } else {
+            this.navigate('right')
           }
-
-          this.navigate('right')
         }
         break
 
@@ -162,10 +184,10 @@ export class Navigation {
         if (actions?.onDown) {
           actions.onDown()
         } else if (direction === 'vertical') {
-          this.navigate('bottom')
-
           if (last) {
             dispatchNavigationEvent(ref?.(), 'navigationonend')
+          } else {
+            this.navigate('bottom')
           }
         }
         break
@@ -174,10 +196,10 @@ export class Navigation {
         if (actions?.onLeft) {
           actions.onLeft()
         } else if (direction === 'horizontal') {
-          this.navigate('left')
-
           if (first) {
             dispatchNavigationEvent(ref?.(), 'navigationonstart')
+          } else {
+            this.navigate('left')
           }
         }
         break

@@ -1,8 +1,12 @@
 import { NavigationList } from './instances/NavigationList'
+import { NavigationNode } from './instances/NavigationNode'
 import type { IListNavigationChildren, INavigationList } from './types'
+import { INavigationNode } from './types/single'
 
 export class Storage {
   private static instance: Storage
+
+  private nodes: Map<string, NavigationNode> = new Map()
   private list: Map<string, NavigationList> = new Map()
 
   public static getInstance() {
@@ -10,6 +14,35 @@ export class Storage {
       Storage.instance = new Storage()
     }
     return Storage.instance
+  }
+
+  /** Node **/
+  setNode(node: INavigationNode) {
+    const getNode = this.getNode(node.key)
+
+    if(getNode) {
+      console.error(`Node ${node.key} already exists`)
+      return
+    }
+
+    const newNode = new NavigationNode(node)
+    this.nodes.set(node.key, newNode)
+  }
+
+  getNode(key: string) {
+    return this.nodes.get(key)
+  }
+
+  getNodes() {
+    return this.nodes
+  }
+
+  deleteNode(nodeId: string) {
+    this.nodes?.delete(nodeId)
+  }
+
+  clearNodes() {
+    this.getNodes()?.clear()
   }
 
   /** List **/
@@ -67,7 +100,7 @@ export class Storage {
     this.list.delete(key)
   }
 
-  clearAllList() {
+  clearLists() {
     this.list.clear()
   }
 }
