@@ -110,8 +110,11 @@ export function createMagicListNavigation({
   }
 
   onCleanup(() => {
-    subscription.unsubscribe()
-    context.destroy()
+    const currentListKey = context.currentList.getValue()?.key
+    if (key === currentListKey) {
+      subscription.unsubscribe()
+      context.destroy()
+    }
   })
 
   subscription.add(

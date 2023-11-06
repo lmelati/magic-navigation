@@ -15,7 +15,7 @@ export interface IMagicListNavigationOptions extends Partial<IMagicNavigationKey
 
 export interface IMagicListNavigation {
   onStatusChange(callback: (status: boolean) => void): void
-  onCurrentChange(callback: (current: unknown) => void): void
+  onCurrentChange(callback: (current: number) => void): void
   onNavigationStart(callback: () => void): void
   onNavigationEnd(callback: () => void): void
   setActive(key: string): void
