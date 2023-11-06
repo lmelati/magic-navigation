@@ -119,6 +119,7 @@ export function createMagicListNavigation({
   )
 
   return {
+    setActiveNode: context.setActiveNode,
     setActive: context.setActive,
     setActiveIndex: context.setActiveIndex,
     onStatusChange: (callback) =>

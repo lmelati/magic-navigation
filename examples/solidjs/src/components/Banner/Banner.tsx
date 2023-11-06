@@ -1,22 +1,17 @@
 import './Banner.css'
 
-import { createMagicListNavigation } from '../../../../../build/lib'
+import { createMagicNavigation } from '../../../../../build/lib'
 import { createSignal } from 'solid-js'
 
 export const Banner = () => {
   let bannerRef!: HTMLDivElement
   const [isActive, setIsActive] = createSignal(false)
-  const { onStatusChange, setActive } = createMagicListNavigation({
+  const { onStatusChange, setActive } = createMagicNavigation({
     key: 'banner',
-    index: 0,
     ref: () => bannerRef,
     isActive: () => true,
-    direction: 'horizontal',
-    size: 1,
     actions: {
-      onDown: () => {
-        setActive('cards')
-      }
+      onDown: () => setActive('cards'),
     }
   })
 

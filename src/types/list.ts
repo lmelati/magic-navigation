@@ -18,6 +18,7 @@ export interface IMagicListNavigation {
   onCurrentChange(callback: (current: number) => void): void
   onNavigationStart(callback: () => void): void
   onNavigationEnd(callback: () => void): void
+  setActiveNode(key: string): void
   setActive(key: string): void
   setActiveIndex({ key, index }: SetActiveIndexProps): void
 }

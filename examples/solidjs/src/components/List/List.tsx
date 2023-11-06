@@ -13,7 +13,7 @@ export const List = () => {
         {(item, index) => {
           let cardRef!: HTMLDivElement
           const [isActive, setIsActive] = createSignal(false)
-          const { onStatusChange, setActive, onNavigationStart, onNavigationEnd } = createMagicListNavigation({
+          const { onStatusChange, setActiveNode, onNavigationStart, onNavigationEnd } = createMagicListNavigation({
             key: 'cards',
             index: index(),
             ref: () => cardRef,
@@ -22,7 +22,7 @@ export const List = () => {
             actions: {
               onEnter: () => console.log('clicou', item),
               onUp: () => {
-                setActive('banner')
+                setActiveNode('banner')
               },
             },
           })

@@ -63,13 +63,27 @@ export class Navigation {
   }
 
   /** Node **/
-  public setCurrentNode = (key: string) => {
+  setCurrentNode = (key: string) => {
     const getNode = this.storage.getNode(key)
     if (!getNode) {
       console.error(`Key ${key} does not exist`)
       return
     }
+
+    if(this.currentList.getValue()) this.currentList.next(undefined)
+
     this.currentNode.next(getNode)
+  }
+
+  setActiveNode = (key: string) => {
+    const getNode = this.storage.getNode(key)
+
+    if (!getNode) {
+      console.error(`Node with key "${key}" does not exist or is undefined.`)
+      return
+    }
+
+    this.setCurrentNode(key)
   }
 
 
@@ -80,6 +94,8 @@ export class Navigation {
       console.error(`List ${key} does not exist`)
       return
     }
+
+    if(this.currentNode.getValue()) this.currentNode.next(undefined)
 
     const newCurrentList = new CurrentList(key, index)
     this.currentList.next(newCurrentList)
@@ -136,12 +152,13 @@ export class Navigation {
     }
   }
 
-  private keyboardEvents = (event: KeyboardEvent) => {
+  private keyListEvents = (event: KeyboardEvent) => {
     const getCurrentList = this.currentList.getValue()
 
-    if (!getCurrentList) return
+    if(!getCurrentList) return
 
     const currentList = this.storage.getList(getCurrentList.key)
+
     const currentChildren = this.storage.getListIndex(
       getCurrentList.key,
       getCurrentList.index
@@ -213,5 +230,48 @@ export class Navigation {
         actions?.onEnter?.()
         break
     }
+  }
+
+  private keyNodeEvents = (event: KeyboardEvent) => {
+    const getCurrentNode = this.currentNode.getValue()
+
+    if(!getCurrentNode) return
+
+    const { actions } = getCurrentNode || {}
+
+    switch (event.key) {
+      case MAPPED_KEYS.KEY_UP:
+        actions.onUp?.()
+        break
+
+      case MAPPED_KEYS.KEY_RIGHT:
+        actions.onRight?.()
+        break
+
+      case MAPPED_KEYS.KEY_DOWN:
+        actions.onDown?.()
+        break
+
+      case MAPPED_KEYS.KEY_LEFT:
+        actions.onLeft?.()
+        break
+
+      case MAPPED_KEYS.KEY_BACK:
+      case MAPPED_KEYS.KEY_ESCAPE:
+        actions?.onBack?.()
+        break
+
+      case MAPPED_KEYS.KEY_ENTER:
+        actions?.onEnter?.()
+        break
+    }
+  }
+
+  private keyboardEvents = (event: KeyboardEvent) => {
+    const getCurrentList = this.currentList.getValue()
+    const getCurrentNode = this.currentNode.getValue()
+
+    if(getCurrentList) this.keyListEvents(event)
+    if(getCurrentNode) this.keyNodeEvents(event)
   }
 }
