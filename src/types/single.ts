@@ -2,7 +2,7 @@ import { IMagicNavigationKeys } from "./keys"
 
 export interface IMagicNavigationOptions extends Partial<IMagicNavigationKeys> {
   key: string
-  ref: () => Element
+  ref?: () => Element
   isActive?: () => boolean
 }
 
@@ -14,5 +14,5 @@ export interface IMagicNavigation {
 
 export interface INavigationNode extends Partial<IMagicNavigationKeys> {
   key: string,
-  ref: () => Element
+  ref?: () => Element
 }

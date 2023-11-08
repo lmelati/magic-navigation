@@ -7,7 +7,7 @@ export type SetActiveIndexProps = { key: string, index: number }
 export interface IMagicListNavigationOptions extends Partial<IMagicNavigationKeys> {
   key: string
   index: number
-  ref: () => Element
+  ref?: () => Element
   size: number
   direction?: IAxis,
   isActive?: () => boolean
@@ -26,7 +26,7 @@ export interface IMagicListNavigation {
 export interface IListNavigationChildren extends Partial<IMagicNavigationKeys> {
   index: number,
   isActive: boolean,
-  ref: () => Element
+  ref?: () => Element
 }
 
 export interface INavigationList {

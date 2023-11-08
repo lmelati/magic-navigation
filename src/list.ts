@@ -49,11 +49,13 @@ export function createMagicListNavigation({
   onMount(() => {
     const { first, last } = getPosition(index, size)
 
-    if (first) {
+    if (first && ref) {
+      // @ts-ignore
       events.onNavigationStart = navigationEvent('navigationonstart')
     }
 
-    if (last) {
+    if (last && ref) {
+      // @ts-ignore
       events.onNavigationEnd = navigationEvent('navigationonend')
     }
 
@@ -61,8 +63,10 @@ export function createMagicListNavigation({
     context.mouseEvents(key, ref)
   })
 
-  const navigationEvent = (eventName: IMagicNavigationEventNames) =>
-    fromEvent<IMagicNavigationEventNames>(ref?.(), eventName)
+  const navigationEvent = (eventName: IMagicNavigationEventNames) => {
+    if(!ref) return
+    return fromEvent<IMagicNavigationEventNames>(ref(), eventName)
+  }
 
   if (isActive?.()) {
     context.setCurrentList(key, index)

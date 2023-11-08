@@ -54,10 +54,10 @@ export class Storage {
     return this.list.get(key)
   }
 
-  getListRef(key: string, ref: () => Element) {
+  getListRef(key: string, ref?: () => Element) {
     const getList = this.getList(key)
 
-    if (!getList) return
+    if (!getList || !ref) return
 
     for (const children of getList.childrens) {
       if (children.ref === ref) {

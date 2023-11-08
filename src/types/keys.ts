@@ -5,6 +5,7 @@ export enum MAPPED_KEYS {
   KEY_LEFT = 'ArrowLeft',
   KEY_ENTER = 'Enter',
   KEY_BACK = 'GoBack',
+  KEY_BACK_TIZEN = 'XF86Back',
   KEY_ESCAPE = 'Escape',
 }
 

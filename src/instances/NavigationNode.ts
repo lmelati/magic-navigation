@@ -2,7 +2,7 @@ import type { INavigationNode } from "src/types/single"
 
 export class NavigationNode implements INavigationNode {
   public key: string
-  public ref: () => Element
+  public ref?: () => Element
   public actions: {
     onUp?: () => void
     onRight?: () => void

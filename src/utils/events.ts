@@ -4,8 +4,9 @@ export const magicNavigationEvent = (name: IMagicNavigationEventNames) =>
   new CustomEvent(name)
 
 export function dispatchNavigationEvent(
-  element: Element,
   name: IMagicNavigationEventNames,
+  element?: Element,
 ) {
+  if(!element) return
   element.dispatchEvent(new CustomEvent(name))
 }

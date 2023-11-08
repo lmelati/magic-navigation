@@ -29,10 +29,10 @@ export class Navigation {
     this.currentNode.next(undefined)
   }
 
-  mouseEvents = (key: string, ref: () => Element, type?: 'single' | 'list') => {
+  mouseEvents = (key: string, ref?: () => Element, type?: 'single' | 'list') => {
     const current = type === 'single' ? this.storage.getNode(key) : this.storage.getListRef(key, ref)
 
-    if (!current) return
+    if (!current || !ref) return
 
     const listElement = ref?.()
 
@@ -178,7 +178,7 @@ export class Navigation {
           actions.onUp()
         } else if (direction === 'vertical') {
           if (first) {
-            dispatchNavigationEvent(ref?.(), 'navigationonstart')
+            dispatchNavigationEvent('navigationonstart', ref?.())
           } else {
             this.navigate('top')
           }
@@ -190,7 +190,7 @@ export class Navigation {
           actions.onRight()
         } else if (direction === 'horizontal') {
           if (last) {
-            dispatchNavigationEvent(ref?.(), 'navigationonend')
+            dispatchNavigationEvent('navigationonend', ref?.())
           } else {
             this.navigate('right')
           }
@@ -202,7 +202,7 @@ export class Navigation {
           actions.onDown()
         } else if (direction === 'vertical') {
           if (last) {
-            dispatchNavigationEvent(ref?.(), 'navigationonend')
+            dispatchNavigationEvent('navigationonend', ref?.())
           } else {
             this.navigate('bottom')
           }
@@ -214,7 +214,7 @@ export class Navigation {
           actions.onLeft()
         } else if (direction === 'horizontal') {
           if (first) {
-            dispatchNavigationEvent(ref?.(), 'navigationonstart')
+            dispatchNavigationEvent('navigationonstart', ref?.())
           } else {
             this.navigate('left')
           }
@@ -222,6 +222,7 @@ export class Navigation {
         break
 
       case MAPPED_KEYS.KEY_BACK:
+      case MAPPED_KEYS.KEY_BACK_TIZEN:
       case MAPPED_KEYS.KEY_ESCAPE:
         actions?.onBack?.()
         break
