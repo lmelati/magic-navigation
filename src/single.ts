@@ -51,6 +51,7 @@ export function createMagicNavigation({
   )
 
   return {
+    setActiveNode: context.setActiveNode,
     setActive: context.setActive,
     onCurrentChange: (callback) => {
       subscription.add(
