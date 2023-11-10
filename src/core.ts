@@ -1,17 +1,10 @@
-import {
-  createComponent,
-  createContext,
-  onCleanup,
-  useContext,
-} from 'solid-js'
-import { Navigation } from './navigation'
-import type {
-  IMagicNavigationProps,
-} from './types'
+import { createComponent, createContext, onCleanup, useContext } from 'solid-js'
+import { Navigation } from './models/navigation'
+import type { IMagicNavigation } from './types'
 
 const MagicNavigationContext = createContext<Navigation>()
 
-export function MagicNavigation(props: IMagicNavigationProps) {
+export function MagicNavigation(props: IMagicNavigation) {
   const instance = new Navigation()
 
   onCleanup(() => {

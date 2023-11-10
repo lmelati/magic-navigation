@@ -1,3 +1,4 @@
 export { MagicNavigation } from './core'
-export { createMagicListNavigation } from './list'
-export { createMagicNavigation } from './single'
+export { useMagicFor } from './for'
+export { useMagicItem } from './item'
+export { useMagicList } from './list'

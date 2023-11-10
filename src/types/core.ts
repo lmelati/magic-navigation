@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js'
 
-export interface IMagicNavigationProps {
-  children?: JSX.Element
+export interface IMagicNavigation {
+  children: JSX.Element
 }

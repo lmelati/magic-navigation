@@ -10,12 +10,14 @@ export enum MAPPED_KEYS {
 }
 
 export interface IMagicNavigationKeys {
-  actions: {
-    onUp?: () => void
-    onRight?: () => void
-    onDown?: () => void
-    onLeft?: () => void
-    onEnter?: () => void
-    onBack?: () => void
-  }
+  actions: Partial<{
+    onUp: () => void
+    onRight: () => void
+    onDown: () => void
+    onLeft: () => void
+    onEnter: () => void
+    onBack: () => void
+    onStart: () => void
+    onEnd: () => void
+  }>
 }
