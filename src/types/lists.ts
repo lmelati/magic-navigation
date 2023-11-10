@@ -34,5 +34,5 @@ export interface IAppendNavigation {
 
 export interface IMagicListNavigation {
   onFocusChange(callback: (isFocused: boolean) => void): void
-  appendChildren({ element, isActive, actions }: IAppend): void
+  appendChildren({ element, isActive, actions }: IAppend): IAppendNavigation
 }
