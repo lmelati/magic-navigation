@@ -1,3 +1,4 @@
+import { CurrentList } from '../models/currentList'
 import type { IMagicNavigationKeys } from './keys'
 
 export type IDirection = 'top' | 'right' | 'bottom' | 'left'
@@ -35,4 +36,6 @@ export interface IAppendNavigation {
 export interface IMagicListNavigation {
   onFocusChange(callback: (isFocused: boolean) => void): void
   appendChildren({ element, isActive, actions }: IAppend): IAppendNavigation
+  setCurrent({ key, index }: { key: string; index?: number }): void
+  getCurrent(): CurrentList | null
 }

@@ -45,8 +45,37 @@ export function useMagicList({
   )
 
   return {
-    onFocusChange: (callback: (isFocused: boolean) => void) =>
-      createEffect(() => callback(isFocused())),
+    onFocusChange: (callback: (isFocused: boolean) => void) => {
+      createEffect(() => callback(isFocused()))
+    },
+    getCurrent() {
+      return navigation.currentList?.getValue()
+    },
+    setCurrent: ({ key, index }: { key: string; index?: number }) => {
+      const getList = navigation.storage.getList(key)
+      if (!getList) {
+        console.error(`List ${key} does not exists`)
+        return
+      }
+
+      if (index) {
+        const getListIndex = getList.children[index]
+        if (!getListIndex) {
+          console.error(`List ${key} with index ${index} does not exists`)
+          return
+        }
+        navigation.setCurrentList(key, index)
+      } else {
+        const getLastActiveIndex = getList.children?.findIndex(
+          (child) => child?.isActive,
+        )
+        if (getLastActiveIndex > -1) {
+          navigation.setCurrentList(key, getLastActiveIndex)
+        } else {
+          navigation.setCurrentList(key, 0)
+        }
+      }
+    },
     appendChildren: ({
       element,
       isActive,
