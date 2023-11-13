@@ -117,6 +117,11 @@ export class Navigation {
 
     const { first, last } = getPosition(getCurrentList.index, currentListSize)
 
+    if (event.keyCode === 461) {
+      actions?.onBack?.()
+      return
+    }
+
     switch (event.key) {
       case MAPPED_KEYS.KEY_UP:
         if (actions?.onUp) {
@@ -184,6 +189,11 @@ export class Navigation {
     if (!getCurrentItem) return
 
     const { actions } = getCurrentItem || {}
+
+    if (event.keyCode === 461) {
+      actions?.onBack?.()
+      return
+    }
 
     switch (event.key) {
       case MAPPED_KEYS.KEY_UP:
