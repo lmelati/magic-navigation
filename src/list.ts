@@ -16,7 +16,7 @@ export function useMagicList({
   mouseEvents = true,
 }: IMagicList): IMagicListNavigation {
   const [isFocused, setIsFocused] = createSignal(false)
-  const navigation = useMagicNavigation()
+  const navigation = useMagicNavigation().instance
   const subscription = new Subscription()
   const getList = navigation.storage.getList(key)
 

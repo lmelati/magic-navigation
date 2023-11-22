@@ -12,7 +12,7 @@ export function useMagicItem({
   actions,
 }: IMagicItem): IMagicItemNavigation {
   const [isFocused, setIsFocused] = createSignal(false)
-  const navigation = useMagicNavigation()
+  const navigation = useMagicNavigation().instance
   const subscription = new Subscription()
   const getItem = navigation.storage.getItem(key)
 

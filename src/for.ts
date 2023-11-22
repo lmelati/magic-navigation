@@ -13,7 +13,7 @@ export function useMagicFor({
   actions,
 }: IMagicList & IAppend) {
   const [active, setActive] = createSignal(false)
-  const navigation = useMagicNavigation()
+  const navigation = useMagicNavigation().instance
   const subscription = new Subscription()
   let index = 0
 
