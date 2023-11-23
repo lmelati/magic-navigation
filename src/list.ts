@@ -58,7 +58,7 @@ export function useMagicList({
         return
       }
 
-      if (index) {
+      if (typeof index === 'number') {
         const getListIndex = getList.children[index]
         if (!getListIndex) {
           console.error(`List ${key} with index ${index} does not exists`)
@@ -234,7 +234,7 @@ export function useMagicList({
             return
           }
 
-          if (index) {
+          if (typeof index === 'number') {
             const getListIndex = getList.children[index]
             if (!getListIndex) {
               console.error(`List ${key} with index ${index} does not exists`)
