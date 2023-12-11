@@ -1,8 +1,9 @@
 import { BehaviorSubject, fromEvent, interval, throttle } from 'rxjs'
-import { MAPPED_KEYS, type IDirection, IConfig } from '../types'
+import { IConfig, MAPPED_KEYS, type IDirection } from '../types'
 import { getPosition } from '../utils/position'
 import { CurrentList } from './currentList'
 import { Item as CurrentItem } from './item'
+import { LastKey } from './lastKey'
 import { Storage } from './storage'
 
 export class Navigation {
@@ -10,11 +11,13 @@ export class Navigation {
 
   public readonly currentItem: BehaviorSubject<CurrentItem | null>
   public readonly currentList: BehaviorSubject<CurrentList | null>
+  public lastKey: LastKey | null
 
   constructor(config?: IConfig) {
     this.storage = Storage.getInstance()
     this.currentItem = new BehaviorSubject<CurrentItem | null>(null)
     this.currentList = new BehaviorSubject<CurrentList | null>(null)
+    this.lastKey = null
 
     fromEvent<KeyboardEvent>(document, 'keydown')
       .pipe(throttle(() => interval(config?.throttleInterval ?? 150)))

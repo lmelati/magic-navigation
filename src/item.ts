@@ -54,7 +54,7 @@ export function useMagicItem({
       ref.removeEventListener(
         'mouseenter',
         (event) => mouseEnterEvent(event),
-        false,
+        false
       )
       ref.removeEventListener('click', mouseClickEvent, false)
     })
@@ -78,13 +78,17 @@ export function useMagicItem({
   subscription.add(
     navigation.currentItem.subscribe((item) => {
       const getCurrent = item?.key === key
+      if (key !== item?.key) {
+        navigation.lastKey = { key, type: 'list' }
+      }
       setIsFocused(getCurrent)
-    }),
+    })
   )
 
   return {
-    onFocusChange: (callback: (isFocused: boolean) => void) =>
-      createEffect(() => callback(isFocused())),
+    onFocusChange: (callback: (isFocused: boolean) => void) => {
+      createEffect(() => callback(isFocused()))
+    },
     setCurrent: ({ key }: { key: string }) => {
       const getItem = navigation.storage.getItem(key)
 
@@ -111,7 +115,7 @@ export function useMagicItem({
         navigation.setCurrentList(key, index)
       } else {
         const getLastActiveIndex = getList.children.findIndex(
-          (child) => child.isActive,
+          (child) => child.isActive
         )
         if (getLastActiveIndex > -1) {
           navigation.setCurrentList(key, getLastActiveIndex)
@@ -119,6 +123,9 @@ export function useMagicItem({
           navigation.setCurrentList(key, 0)
         }
       }
+    },
+    getLastKey() {
+      return navigation.lastKey
     },
   }
 }

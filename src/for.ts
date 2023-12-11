@@ -2,7 +2,12 @@ import { Subscription, filter, pairwise, startWith } from 'rxjs'
 import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { useMagicNavigation } from './core'
 import { List } from './models/list'
-import type { IAppend, IListChildren, IMagicList } from './types'
+import type {
+  IAppend,
+  IListChildren,
+  IMagicForNavigation,
+  IMagicList,
+} from './types'
 
 export function useMagicFor({
   key,
@@ -11,7 +16,7 @@ export function useMagicFor({
   element,
   isActive,
   actions,
-}: IMagicList & IAppend) {
+}: IMagicList & IAppend): IMagicForNavigation {
   const [active, setActive] = createSignal(false)
   const navigation = useMagicNavigation().instance
   const subscription = new Subscription()
@@ -58,7 +63,7 @@ export function useMagicFor({
 
     const getCurrentListElement = navigation.storage.getListElement(
       key,
-      element,
+      element
     )
 
     if (!getCurrentListElement?.children) {
@@ -74,7 +79,7 @@ export function useMagicFor({
     ref.addEventListener(
       'mouseenter',
       (event) => mouseEnterEvent(event, key, index),
-      false,
+      false
     )
     ref.addEventListener('click', (event) => mouseClickEvent(event), false)
 
@@ -82,7 +87,7 @@ export function useMagicFor({
       ref.removeEventListener(
         'mouseenter',
         (event) => mouseEnterEvent(event, key, index),
-        false,
+        false
       )
       ref.removeEventListener('click', (event) => mouseClickEvent(event), false)
     })
@@ -108,7 +113,7 @@ export function useMagicFor({
       .pipe(
         startWith(null),
         pairwise(),
-        filter(([prev, current]) => prev?.key === key || current?.key === key),
+        filter(([prev, current]) => prev?.key === key || current?.key === key)
       )
       .subscribe(([prev, current]) => {
         const getPrev = prev?.key === key && prev.index === index
@@ -119,11 +124,15 @@ export function useMagicFor({
 
         if (getPrev) {
           const prevChildren = getList.children.find(
-            (_, index) => index === prev.index,
+            (_, index) => index === prev.index
           )
 
           if (prevChildren && prevChildren.isActive && key === current?.key) {
             prevChildren.isActive = false
+          }
+
+          if (prevChildren && key !== current?.key) {
+            navigation.lastKey = { key, type: 'list' }
           }
 
           setActive(false)
@@ -131,7 +140,7 @@ export function useMagicFor({
 
         if (getCurrent) {
           const currentChildren = getList.children.find(
-            (_, index) => index === current.index,
+            (_, index) => index === current.index
           )
 
           if (currentChildren && !currentChildren.isActive) {
@@ -140,7 +149,7 @@ export function useMagicFor({
 
           setActive(true)
         }
-      }),
+      })
   )
 
   return {
@@ -170,7 +179,7 @@ export function useMagicFor({
         navigation.setCurrentList(key, index)
       } else {
         const getLastActiveIndex = getList.children?.findIndex(
-          (child) => child?.isActive,
+          (child) => child?.isActive
         )
         if (getLastActiveIndex > -1) {
           navigation.setCurrentList(key, getLastActiveIndex)
@@ -188,6 +197,9 @@ export function useMagicFor({
       }
 
       navigation.setCurrentItem(key, getItem)
+    },
+    getLastKey() {
+      return navigation.lastKey
     },
   }
 }

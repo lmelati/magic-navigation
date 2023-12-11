@@ -41,7 +41,7 @@ export function useMagicList({
     navigation.currentList.subscribe((current) => {
       const getCurrent = current?.key === key
       setIsFocused(getCurrent)
-    }),
+    })
   )
 
   return {
@@ -67,7 +67,7 @@ export function useMagicList({
         navigation.setCurrentList(key, index)
       } else {
         const getLastActiveIndex = getList.children?.findIndex(
-          (child) => child?.isActive,
+          (child) => child?.isActive
         )
         if (getLastActiveIndex > -1) {
           navigation.setCurrentList(key, getLastActiveIndex)
@@ -110,7 +110,7 @@ export function useMagicList({
 
         const getCurrentListElement = navigation.storage.getListElement(
           key,
-          element,
+          element
         )
 
         if (!getCurrentListElement?.children) {
@@ -126,7 +126,7 @@ export function useMagicList({
         ref.addEventListener(
           'mouseenter',
           (event) => mouseEnterEvent(event, key, index),
-          false,
+          false
         )
         ref.addEventListener('click', (event) => mouseClickEvent(event), false)
 
@@ -134,12 +134,12 @@ export function useMagicList({
           ref.removeEventListener(
             'mouseenter',
             (event) => mouseEnterEvent(event, key, index),
-            false,
+            false
           )
           ref.removeEventListener(
             'click',
             (event) => mouseClickEvent(event),
-            false,
+            false
           )
         })
       }
@@ -176,8 +176,8 @@ export function useMagicList({
             startWith(null),
             pairwise(),
             filter(
-              ([prev, current]) => prev?.key === key || current?.key === key,
-            ),
+              ([prev, current]) => prev?.key === key || current?.key === key
+            )
           )
           .subscribe(([prev, current]) => {
             const getPrev = prev?.key === key && prev.index === index
@@ -188,7 +188,7 @@ export function useMagicList({
 
             if (getPrev) {
               const prevChildren = getList.children.find(
-                (_, index) => index === prev.index,
+                (_, index) => index === prev.index
               )
 
               if (
@@ -199,12 +199,16 @@ export function useMagicList({
                 prevChildren.isActive = false
               }
 
+              if (prevChildren && key !== current?.key) {
+                navigation.lastKey = { key, type: 'list' }
+              }
+
               setActive(false)
             }
 
             if (getCurrent) {
               const currentChildren = getList.children.find(
-                (_, index) => index === current.index,
+                (_, index) => index === current.index
               )
 
               if (currentChildren && !currentChildren.isActive) {
@@ -213,7 +217,7 @@ export function useMagicList({
 
               setActive(true)
             }
-          }),
+          })
       )
 
       return {
@@ -243,7 +247,7 @@ export function useMagicList({
             navigation.setCurrentList(key, index)
           } else {
             const getLastActiveIndex = getList.children?.findIndex(
-              (child) => child?.isActive,
+              (child) => child?.isActive
             )
             if (getLastActiveIndex > -1) {
               navigation.setCurrentList(key, getLastActiveIndex)
@@ -262,7 +266,13 @@ export function useMagicList({
 
           navigation.setCurrentItem(key, getItem)
         },
+        getLastKey() {
+          return navigation.lastKey
+        },
       }
+    },
+    getLastKey() {
+      return navigation.lastKey
     },
   }
 }
